@@ -1494,18 +1494,103 @@ Now we could write the entire app like this, but it's harder to read.
 
 
 # Section 3.42 - Organising Component Files
+We've learned about JSX and how it looks under the hood. But what about organising your components... As your project grows it is usually best to store them in sub-folders and not keep them in one large folder.
+
+With this project we can argue that we have some general UI components which are not tied to specific features, and feature specific components.
+
+We could create an `Expenses` and `UI` sub folder within the project. We could move the `Card` files into the `UI` folder and the `Expenses*` files into the `Expenses` folder. Remember to update your imports as well as `App.js`.
+
+You project should load as expected :)
+
+And we are doing this to keep things organised, but you can decide on your own architecture...
 
 
+# Section 3.43 - Alternative Syntax
+Let's look at an alternative syntax for writing these functions. We're talking about Arrow Functions... Let's use `App.js` as an example;
+```
+function App() {
+  ...
+}
+```
+
+and change it to
+```
+const App = () => {
+  ...
+}
+```
+
+Parameters go inside the `()` and the body of the function lives inside the `{ ... }`. This is standard JS code and not specific to React, and we'll migrate all our code to this syntax.
 
 
+# Section 3 - Quiz 1
+Question 1:
+Which kind of code do you write when using React.js?
+
+Declarative JavaScript Code
 
 
+Question 2:
+What is "JSX"?
+
+It is a special, non-standard syntax which is enabled in React projects
 
 
+Question 3:
+Why is React all about "Components"?
+
+Every UI in the end up is made up of multiple building blocks (=components), hence it makes sense to think about user interfaces as "combinations of components"
 
 
+Question 4:
+What does "declarative" mean?
+
+You define the desired outcome (e.g. a target UI) and let the library (React) figure out the steps.
 
 
+Question 5:
+What is a "React Component"?
+
+It's a JavaScript function which typically returns HTML (JSX) code that should be displayed.
 
 
+Question 6:
+How many custom React components must a React app have?
 
+That's totally up to you.
+
+
+Question 7:
+Which statement is correct?
+
+With React, you build a component tree with one root component, that's mounted into a DOM node.
+
+
+Question 8:
+What does "component tree" mean?
+
+It means that you have a root node which then has more components nested beneath it
+
+
+Question 9:
+How do you pass data between components?
+
+Via "custom HTML atrributes" (better known as "props")
+
+
+Question 10:
+How can you output dynamic data in React components (i.e. in the returned JSX code)?
+
+You can use single curly braces (opening & closing) with any JS expression between them.
+
+
+# Section 3.44
+You may want to compare your code to that used in the course videos (e.g. to find + fix errors).
+
+For that, you find multiple code snapshots for this module here in this Github repository: https://github.com/academind/react-complete-guide-code/tree/03-react-basics-working-with-components
+
+Usage instructions can be found on the page that link is leading to.
+
+Simply pick one of the snapshots in the /code folder - the subfolder names are chosen such that they are easy to match against lecture names in this course section.
+
+You also find section slides (if available) in that Github repository.
