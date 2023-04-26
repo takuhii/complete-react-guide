@@ -136,6 +136,117 @@ export default function App() {
 
 
 # Section 4.47 - How Component Functions are Executed.
+Reacting to event is an important first step. We want to change the title when the button is clicked, so we could create a VARIABLE using `let` which we name `title`, and it holds the value we find in `props.title`, then we change our JSX code to use the variable `title`.
+```
+import ExpenseDate from './ExpenseDate';
+import Card from '../UI/Card';
+import './ExpenseItem.css';
+
+const ExpenseItem = (props) => {
+  // function clickHandler() => {
+  //  console.log('Clicked!!!!');
+  // }
+
+  let title = props.title;
+
+  const clickHandler = () => {
+    console.log('Clicked!!!!');
+  };
+  return (
+    <Card className='expense-item'>
+      <ExpenseDate date={props.date} />
+      <div className='expense-item__description'>
+        <h2>{title}</h2>
+        <div className='expense-item__price'>${props.amount}</div>
+      </div>
+      <button onClick={clickHandler}>Change Title</button>
+    </Card>
+  );
+}
+
+export default ExpenseItem;
+```
+
+And when we click on the button, we see the same result as before.
+
+Why do this? Well since it is a variable, we could change it, for example, when the `clickHandler` is executed. So when you click the button, we execute the clickHandler function and we can change the title to `Updated!`, we should then see the title change on our screen, shouldn't we?
+```
+import ExpenseDate from './ExpenseDate';
+import Card from '../UI/Card';
+import './ExpenseItem.css';
+
+const ExpenseItem = (props) => {
+  // function clickHandler() => {
+  //  console.log('Clicked!!!!');
+  // }
+
+  let title = props.title;
+
+  const clickHandler = () => {
+    title = 'Updated!';
+  };
+  return (
+    <Card className='expense-item'>
+      <ExpenseDate date={props.date} />
+      <div className='expense-item__description'>
+        <h2>{title}</h2>
+        <div className='expense-item__price'>${props.amount}</div>
+      </div>
+      <button onClick={clickHandler}>Change Title</button>
+    </Card>
+  );
+}
+
+export default ExpenseItem;
+```
+
+Nothing happened... We can hit the button all day long and nothing changes, why does that happen? We know the `clickHandler` is getting triggered, because if we add a `console.log(title);` we see that appearing in the console.
+```
+import ExpenseDate from './ExpenseDate';
+import Card from '../UI/Card';
+import './ExpenseItem.css';
+
+const ExpenseItem = (props) => {
+  // function clickHandler() => {
+  //  console.log('Clicked!!!!');
+  // }
+
+  let title = props.title;
+
+  const clickHandler = () => {
+    title = 'Updated!';
+    console.log(title);
+  };
+  return (
+    <Card className='expense-item'>
+      <ExpenseDate date={props.date} />
+      <div className='expense-item__description'>
+        <h2>{title}</h2>
+        <div className='expense-item__price'>${props.amount}</div>
+      </div>
+      <button onClick={clickHandler}>Change Title</button>
+    </Card>
+  );
+}
+
+export default ExpenseItem;
+```
+
+What are we missing? Simply, React doesn't work like this, we need to look into how React actually parses JSX code, and how it renders it.
+
+Keep in mind that your component is a function. A component is a regular function, the only special thing is that is returns JSX. Since it is a function, someone has to call it, we never called our component functions, we just use them like HTML elements in the JSX. The thing is under the hood, this is almost like a function call. By using our components in JSX we make React aware of our component functions, for example, the `ExpenseItem` function, and whenever React evaluates the JSX code it will call these component functions. These component functions then return more JSX code, which is then evaluated up until there is no more JSX code to evaluate. So Rect keeps on calling any component functions it encounters in JSX and calls any functions that those functions might have returned, untill there are no more left.
+
+Using our project as an example, when React executes `Expenses.js`, when React encounters `ExpenseItem` it executes all the JSX code, executing all the functions within it, such as `Card` and `ExpenseDate`, and executing all the functions within those until there are no more left and render to DOM instructions.
+
+This is all started by the `index.js` file which we point towards the App component `App.js`, that's the first component function that is called, and this happens when the React app is loaded, which happens when the page is visited.
+
+React never repeats that, it goes through all of that when the App is initially rendered, but then it is done. However in modern applications, you might want to update what is visible, and we need a way of telling React that something has changed and a component needs re-evaluating, and this is where we use something in React called `State`
+
+
+# Section 4.48 - Working with "State".
+
+
+
 
 
 
