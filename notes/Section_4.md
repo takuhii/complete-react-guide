@@ -244,12 +244,510 @@ React never repeats that, it goes through all of that when the App is initially 
 
 
 # Section 4.48 - Working with "State".
+Stae is not a React specific concept, but it is a key concept in React. In our `ExpenseItem`, we have a scenario where we want to use that built in 'state' concept. We have a title that should chnage when the clickhandler executes, it's actually data that should result in the component being re-evaluated and redrawn when the title data chnages. By default regualr VARs are not triggering a re-evaluation. React doesn't care about these things and ignores them, that code executes, but the overall function doesn't execute again. Even if it would re-execute it, the title would stay the same because that's what we initialise it to.
+
+To tell React to run it again, we need to import something else, a named import...
+```
+import React, { useState } from 'react';
+```
+
+We have imported the React object, and now we have a named import, useState, provided by the React library, and we can define values as state, where changes should reflect in the component function being called again. This is really different to regular variables.
+
+How do we use this useState though? Well inside of our component function, we just call `useState`, and `usestate` is a React Hook... There are other hooks, and we'll come to those, but this one is quite important, and all React Hooks can be recognised by the fact they are prefixed with `use`. These hooks must only be called inside of React component functions, they can't be called outside of functions, and also should not be called in nested functions. There is an exception to this rule, but we will come to that later.
+```
+const ExpenseItem = (props) => {
+  // function clickHandler() {}
+  useState();
+
+  let title = props.title;
+
+  const clickHandler = () => {
+    title = 'Updated!';
+    console.log(title);
+  }
+}
+```
+
+`usestate` doesn't work just like that, it needs a default state value, `useState` creates a special kind of variable, one that chnages will lead the component function to be called again, so we can assign a special value, in our case...
+```
+const ExpenseItem = (props) => {
+  // function clickHandler() {}
+  useState(props.title);
+
+  let title = props.title;
+
+  const clickHandler = () => {
+    title = 'Updated!';
+    console.log(title);
+  }
+}
+```
+
+Now our special varible is created, but we need to be able to use it laster in our component, so `useState` returns something, giving ua access to this special variable, it also returns a function which we can then call to assign a new value to. We won't be assigning values using the equal sign, instead we will use the new function. `useState` actually returns an array, where the first value is the variable itself, the second elemnt in the array is the updating function. We can use array destucturing to store both elements or constants.
+```
+const ExpenseItem = (props) => {
+  // function clickHandler() {}
+  const [title, setTtile] = useState(props.title);
+
+  let title = props.title;
+
+  const clickHandler = () => {
+    title = 'Updated!';
+    console.log(title);
+  }
+}
+```
+
+The first element is a pointer at the managed value (so `props.title`), and the second element is a function which we can call to set a new title (so `setTitle`). `useState` always returns an array with two elements. The first element is always the current state value, and the second element is the fucnton for updating that. Now we can tidy up our code a bit...
+```
+const ExpenseItem = (props) => {
+  // function clickHandler() {}
+  const [title, setTtile] = useState(props.title);
+
+  const clickHandler = () => {
+
+    console.log(title);
+  }
+}
+```
+
+`{title}` is still valid in the JSX because we have declared it in `useState`
+```
+...
+  <div className='expense-item__description'>
+    <h2>{title}</h2>
+    <div className='expense-item__price'>${props.amount}</div>
+  </div>
+...
+
+```
+
+and when we click the button, nothing happens because we haven't changed the state. We're not updating anything.
+
+If we want to update the value, we don't use an equals like we usually would
+`title = newValue` we use `setTitle();` as this is what we declared as our function to update the title and pass our new value as an arugument `setTitle('Updated!');`.
+
+But why do we do it this way instead of using an equals? The reason is that calling this function does not just assign a new value to a variable, it is a special variable to begin with, it is managed by React in memory to begin with, and when we call this state updating function, this special var will not just receive a new value, but the component function in which we call it will be executed again. by calling this function, we are telling React we are assigning a new value to this state and that then also tells React to re-evaluate the component, so React will go and execute the component function, and the assiociated JSX code.
+
+If we save the code we will see the title chnage to `Updated!` in the `ExpenseItem`. You'll notice the console logs still show the title before we update it, this is becuase it doesn't change the value right away, but schedules it, so in the next line thereafter the new value isn't available yet. That why we see the old value, even though it was updated before logging, and we do see that it is called again and the updated value is displayed on the screen, that is how React `state` works.
 
 
+# Coding Exercise 6: Working with State
+You're working on a part of an online shop where a discounted price should be displayed on the screen once the user clicked a button.
+
+Your task is to add an event listener to listen for clicks on the button that's already included in the App component.
+
+Upon a button click, the price should change from $100 to $75.
+
+Add a state value to the existing App component function and make sure the state value is both updated upon button clicks and output as part of the JSX code.
+```
+import React from 'react';
+
+import './styles.css';
+
+// don't change the Component name "App"
+// important: In this code editor, use React.useState() instead of just useState()
+export default function App() {
+    return (
+        <div>
+            <p>$100</p>
+            <button>Apply Discount</button>
+        </div>
+    );
+}
+```
+
+The Solution
+```
+import React, { useState } from 'react';
+
+import './styles.css';
+
+// don't change the Component name "App"
+// important: In this code editor, use React.useState() instead of just useState()
+export default function App() {
+    const [price, setPrice] = React.useState('$100');
+    // Outside of the Udemy Code Editor
+    // const [price, setPrice] = useState('$100');
+    const clickHandler = () => {
+        setPrice('$75');
+    };
+    return (
+        <div>
+            <p>{price}</p>
+            <button onClick={clickHandler}>Apply Discount</button>
+        </div>
+    );
+}
+```
 
 
+# Section 4.49 - A Closer Look at the "useState" Hook.
+We've learned about state and that state is a key concept in React. `useState` registers some state, so some value as a state, ofr the component in which it is being called. It registers it for a specific component instance. We use it four times in `ExpenseItem` as we have 4 expense items in `Expense.js`. Every item gets it's own seperate state which is deteached from the other states, so everytime we call it, so a new state is created. So when we click 'change title' in our code example, it only affects the Expense Item it is attached to and doesn't do all of them.
+
+One thing which could be confusing is, why are we using `const`, well keep in mind we aren't assigning a value using the equal sign. To update the value we use the state changing function. The value is managed somewhere else by React. So using a `const` is fine.
+
+The special thing here is that React keeps track of the useState in a given component for the first time, when we call it for the first time ever it will take that arguement as an initial value. If a component is then re-executed, React will not reinitialise this state, and will grab the latest state and give us that instead.
+
+It is important to understand how state works under the hood. In a nutshell using state is quite simple, you register state (`usestate`), you always get back two values (value itself and updating function), you call the updating function whenever the state should change, you use the first element whenever you want to use the state value to output in your JSX. React does the rest...
+
+Without state, our interface would never change.
 
 
+# Section 4.50 - State can be updated in many ways.
+Thus far, we update our state upon user events (e.g. upon a click).
+
+That's very common but not required for state updates! You can update states for whatever reason you may have.
+
+Later in the course, we'll see Http requests that complete (where we then want to update the state based on the Http response we got back) but you could also be updating state because a timer (set with setTimeout()) expired for example.
+
+
+# Section 4.51 - Adding Form inputs.
+Now we know what state is, and we understand how to listen to events, we can work on our example project to turn it more and more into an expense tracker. Let's add the capability to add user input so users can add there own expenses.
+
+To start this we need to add a new component, we'll call it `NewExpense` and a new file called `NewExpense.js`
+```
+|-- src
+    |-- components
+        |-- Expenses
+        |-- NewExpense
+        |   |-- NewExpense.js
+        |-- UI
+...
+```
+
+`NewExpense.js`
+```
+const NewExpense = () => {
+    
+};
+
+export default NewExpense;
+```
+
+Now we need to return a form, so we can add the following code to start doing that
+```
+const NewExpense = () => {
+    return <div>
+      <form></form>
+    </div>
+};
+
+export default NewExpense;
+```
+
+The `<div>` allows us to add some styling later on, but while we are on the subject of styling, let's add some...
+```
+|-- src
+    |-- components
+        |-- Expenses
+        |-- NewExpense
+        |   |-- NewExpense.js
+        |   |-- NewExpense.css
+        |-- UI
+...
+```
+
+and make sure we import it once we have populated it...
+```
+import './NewExpense.css';
+
+const NewExpense = () => {
+    return <div>
+      <form></form>
+    </div>
+};
+
+export default NewExpense;
+```
+
+Now we can add the styling to the form, by adding the `new-expense` css class we have outlined in our CSS file (N.B. these were already written for the example).
+```
+import './NewExpense.css';
+
+const NewExpense = () => {
+    return <div className="new-expense">
+
+    </div>
+};
+
+export default NewExpense;
+```
+
+Now we can work on the `form`, but we're going to move it into a separate component, that way we keep the logic separate and the files are lean again...
+```
+import './NewExpense.css';
+
+const NewExpense = () => {
+    return <div className="new-expense">
+      
+    </div>
+};
+
+export default NewExpense;
+```
+
+So we create a new JS file called `ExpenseForm.js`, and drop our code in their...
+```
+const ExpenseForm = () => {
+  
+};
+
+export default ExpenseForm;
+```
+
+and we'll also create some styles as well, we'll call it `ExpenseForm.css`.
+```
+|-- src
+    |-- components
+        |-- Expenses
+        |-- NewExpense
+        |   |-- ExpenseForm.js
+        |   |-- ExpenseForm.css
+        |   |-- NewExpense.js
+        |   |-- NewExpense.css
+        |-- UI
+...
+```
+
+and we'll import it the same way as before
+```
+import './ExpenseForm.css';
+
+const ExpenseForm = () => {
+  
+};
+
+export default ExpenseForm;
+```
+
+In the `Expenseform.js` we'll return a form element
+```
+const ExpenseForm = () => {
+  return <form></form>
+};
+
+export default ExpenseForm;
+```
+
+When it comes to struturing the form, we want to gather expense data and let users input a `title`, a `date`, using a date picker and, of course the amount.
+
+So that means we will need three input fields, and we'll put them all in a DIV so they can be styled. We will also add a class of `new-expense__controls` for single inputs (its in the CSS provided), and we'll also add a label and input type of `text`.
+```
+const ExpenseForm = () => {
+  return <form>
+    <div className='new-expense__controls'>
+      <div className='new-expense__control'>
+        <label>Title</label>
+        <input type='text'/>
+      </div>
+    </div>
+  </form>
+};
+
+export default ExpenseForm;
+```
+
+We write the `<input>` as a self closing tag as, in React, you don't place anything between the opening and closing tags, so this is ok...
+
+So this is a basic input form, and these are all default HTML elements, but we will soon add listeners and state management to make it more functional.
+
+Now we need to copy the DIV to create Amount, and add a few addtional atrributes...
+```
+const ExpenseForm = () => {
+  return <form>
+    <div className='new-expense__controls'>
+      <div className='new-expense__control'>
+        <label>Title</label>
+        <input type='text'/>
+      </div>
+      <div className='new-expense__control'>
+        <label>Amount</label>
+        <input type='number' min="0.01" step="0.01" />
+      </div>
+    </div>
+  </form>
+};
+
+export default ExpenseForm;
+```
+
+The `min` attribute specifies the minimum value for an input field. There is also a max attribute which defines, you guessed it the maximum value for a field. You can use the max and min attributes together to create a range of legal values.
+
+The `step` attribute specifies the legal number intervals for an input field, So for example, if `step="3"`, legal numbers could be -3, 0, 3, 6, etc...
+
+Now we can add something for the date
+```
+const ExpenseForm = () => {
+  return <form>
+    <div className='new-expense__controls'>
+      <div className='new-expense__control'>
+        <label>Title</label>
+        <input type='text'/>
+      </div>
+      <div className='new-expense__control'>
+        <label>Amount</label>
+        <input type='number' min="0.01" step="0.01" />
+      </div>
+      <div className='new-expense__control'>
+        <label>Date</label>
+        <input type='date' min="2019-01-01" step="2024-12-31" />
+      </div>
+    </div>
+  </form>
+};
+
+export default ExpenseForm;
+```
+
+By setting the input type to `date` it should give us a date picker automatically, the `min` and `max` just gives us a manageable date range to work with, so we aren't rolling through loads of dates... But later on we may want to apply a filter to allow us to provide specific years.
+
+Now let's create a button so our user can submit their expenses claims
+```
+const ExpenseForm = () => {
+  return <form>
+    <div className='new-expense__controls'>
+      <div className='new-expense__control'>
+        <label>Title</label>
+        <input type='text'/>
+      </div>
+      <div className='new-expense__control'>
+        <label>Amount</label>
+        <input type='number' min="0.01" step="0.01" />
+      </div>
+      <div className='new-expense__control'>
+        <label>Date</label>
+        <input type='date' min="2019-01-01" step="2024-12-31" />
+      </div>
+    </div>
+    <div className='new-expense__actions'>
+        <button type="submit">Add Expense</button>
+    </div>
+  </form>
+};
+
+export default ExpenseForm;
+```
+
+we set the `button` type to `submit` so that when the button is pressed, it is submitted. That was a lot of work, but now we can use our new form in our `NewExpense` component... So we need to import it and implement it...
+```
+import ExpenseForm from './ExpenseForm'
+import './NewExpense.css';
+
+const NewExpense = () => {
+    return <div className="new-expense">
+      <ExpenseForm />
+    </div>
+};
+
+export default NewExpense;
+```
+
+Now we need to render this from `App.js`. So we again, need to import and implement our code like this...
+```
+import NewExpense from './components/NewExpense/NewExpense';
+import Expenses from './components/Expenses/Expenses';
+
+...
+
+  return (
+    <div>
+      <NewExpense />
+      <Expenses items={expenses} />
+    </div>
+  );
+}
+
+export default App;
+```
+
+So you can see we've replaced the awful `H2` with our shiny new component for recording expenses. We save our work and we should see the Expenses form above the list of expenses.
+
+Now we have added our component, it isn't doing anything and that is what we will look at next...
+
+
+# Section 4.52 - Listening to User Input.
+So lets work on gathering user input. For a start we want to react to every change on every keystroke. To do that we need to add listeners...
+```
+const ExpenseForm = () => {
+  return <form>
+    <div className='new-expense__controls'>
+      <div className='new-expense__control'>
+        <label>Title</label>
+        <input type='text' onChange />
+      </div>
+      <div className='new-expense__control'>
+        <label>Amount</label>
+        <input type='number' min="0.01" step="0.01" />
+      </div>
+      <div className='new-expense__control'>
+        <label>Date</label>
+        <input type='date' min="2019-01-01" step="2024-12-31" />
+      </div>
+    </div>
+    <div className='new-expense__actions'>
+        <button type="submit">Add Expense</button>
+    </div>
+  </form>
+};
+
+export default ExpenseForm;
+```
+
+This adds an `eventListener` for the `change` event to the input element that is rendered in the DOM. Then we need to point to the code that is executed when that event accours... So let's define that
+```
+const ExpenseForm = () => {
+  const titleChangeHandler = () => {
+    console.log('Title changed!');
+  };
+
+  return <form>
+    <div className='new-expense__controls'>
+      <div className='new-expense__control'>
+        <label>Title</label>
+        <input type='text' onChange={titleChangeHandler} />
+      </div>
+      <div className='new-expense__control'>
+        <label>Amount</label>
+        <input type='number' min="0.01" step="0.01" />
+      </div>
+      <div className='new-expense__control'>
+        <label>Date</label>
+        <input type='date' min="2019-01-01" step="2024-12-31" />
+      </div>
+    </div>
+    <div className='new-expense__actions'>
+        <button type="submit">Add Expense</button>
+    </div>
+  </form>
+};
+
+export default ExpenseForm;
+```
+
+Now when we type in the title input, we'll see that action recorded in the `console`. This is great, but we want to get the value the user created, and how can we get that, what are our options? The answer is simple, if you know vanilla JS, if we add an eventListener in Vanilla JS like this...
+```
+document.getElementById('').addEventListener('click', () => {});
+```
+
+So here we are we are adding an event listener to an element, in this instance we are listening for the `click` event, and we are passing the function (the `() => {}` bit) as a second argument, which is basically the same function we pass in the `onChange` prop. The function inside the listener, we automatically get an event object which describes which occured, that's default JS behaviour, and we get that default event object in our `titleChangeHandler`, but we don't have to do anything to get it, since we pass the function to React, through onChnage, React will make sure we get the event object when the change event occurs. If we log the event, we can see what it; doing in the console
+```
+const titleChangeHandler = (event) => {
+    console.log(event);
+};
+```
+
+The most interesting thing in the response is the `target` field. `target` simply point to the DOM element where the event occurred, so in our case `input`, and in turn the `input` element has a long list of properties that we cab read and set, most importantly though, it has a `value` property, the `value` property holds the current value of the input at the time the event occurred.
+
+That's useful, because we can drill into the target and then the value of the event, so we can get the currently entered value.
+```
+console.log(event.target.value);
+```
+
+When we view the console we should see the values we are typing...
+
+
+# Section 4.53 - Working with Multiple States.
 
 
 
