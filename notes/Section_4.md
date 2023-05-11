@@ -1152,12 +1152,68 @@ Now we just need to clear the input when the form is submitted
 
 
 # Section 4.57 - Adding Two Way Binding.
+How can we clear those inoputs? That's part of the reason we are using `state` to store our values. We could have also used global variables if we just wanted to persist the values, but by using `state` we have an advantage. We can now implement something called two way binding, which basically means, for inputs, we don't just listen for changes, but we can also pass a new value back to the input so we can reset of change it programatically. How do we do that, well it is quite simple really, we add the `value` attribute to our input
+```
+<input type='text' value="" onChange={titleChangeHandler} />
+```
+
+This sets the internal `value` property, which every input element has, and we can set it to a new value, and in our case we will bind it to `enteredTitle`
+```
+<input type='text' value="{enteredTitle}" onChange={titleChangeHandler} />
+```
+
+This is now two way binding as we aren't just listening to changes in the input to update our state, but also feed the state back into the input, so that when we chnage the state we also change the input, while this sounds like an infinite loop, it actually isn't... 
+
+The advantages of when the form is submitted, for example, we can call `setEnteredTitle` and set it to an empty string, which was out initial state.
+```
+...
+  const submitHandler = (event) => {
+    event.preventDefault();
+
+    const expenseDate = {
+      title: enteredTitle,
+      amount: enteredAmount,
+      date: new Date(enteredDate)
+    };
+
+    console.log(expenseDate);
+    setEnteredTitle('');
+  };
+...
+```
+
+By doing this, we over-ride what the user entered after the form was submitted, and therefore clear the input and we can do this for all the inputs, and remember to add the `value` attribute
+```
+...
+  const submitHandler = (event) => {
+    event.preventDefault();
+
+    const expenseDate = {
+      title: enteredTitle,
+      amount: enteredAmount,
+      date: new Date(enteredDate)
+    };
+
+    console.log(expenseDate);
+    setEnteredTitle('');
+    setEnteredAmount('');
+    setEnteredDate('');
+  };
+...
+<input type='text' value={enteredTitle} onChange={titleChangeHandler} />
+...
+<input type='number' value={enteredAmount} min="0.01" step="0.01" onChange={amountChangeHandler} />
+...
+<input type='date' value={enteredDate} min="2019-01-01" step="2024-12-31" onChange={dateChangeHandler} />
+...
+```
+
+If we save all this and reload, we should see our values reset when we click `add expense`, and our data is still collected in our object,currently `console.log`.
+
+This is of course another key concept in React, as two way binding is very useful when working with Forms, because it allows you to gather inpur and chnage it as well for example, upon form submission ;)
 
 
-
-
-
-
+# Section 4.58 - Child-to-Parent Component Communication (Bottom Up).
 
 
 
