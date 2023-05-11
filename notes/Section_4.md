@@ -748,6 +748,445 @@ When we view the console we should see the values we are typing...
 
 
 # Section 4.53 - Working with Multiple States.
+Our next question is, what do we want to do with the value we are capturing? We want to make sure we store it somewhere, so that when we submit the form we can use that value. We want to gather all the values from all inputs and then combine them into an object when the form is submitted.
+
+One way of storing that value and making sure it survives, we can use state again. We can call `usestate` in `ExpenseForm.js` and call it as the start of the `ExpenseForm` function. We also set the state of our first part of the form to an empty string, but we'll destructure it as well... using a similar naming convention from before, `[currentlyEnteredtitle, functionForUpdatingState]`
+
+```
+import React, { usestate } from 'react';
+
+const ExpenseForm = () => {
+  const [enteredTitle, setEnteredTitle] = useState('');
+  ...
+```
+
+So now in `titleChangeHandler` we can just call `setEnteredTitle` and pass `event.target.value` as a parameter and this will be stored in our state...
+```
+import React, { usestate } from 'react';
+
+const ExpenseForm = () => {
+  const [enteredTitle, setEnteredTitle] = useState('');
+
+  const titleChangeHandler = (event) => {
+    setEnteredTitle(event.target.value);
+  ...
+```
+
+Now here we aren't really doing this to update the component, but we are doing to to ensure we are storing this in some variable, which is deteached from the life-cycle of the function... There are other ways, but this suits our needs for now.
+
+We can do the same for the other two inputs
+```
+...
+const [enteredTitle, setEnteredTitle] = useState('');
+const [enteredAmount, setEnteredAmount] = useState('');
+const [enteredDate, setEnteredDate] = useState('');
+
+const titleChangeHandler = (event) => {
+  setEnteredTitle(event.target.value);
+};
+
+const amountChangeHandler = (event) => {
+  setEnteredAmount(event.target.value);
+};
+
+const dateChangeHandler = (event) => {
+  setEnteredDate(event.target.value);
+};
+
+return <form>
+  <div className='new-expense__controls'>
+    <div className='new-expense__control'>
+      <label>Title</label>
+      <input type='text' onChange={titleChangeHandler} />
+    </div>
+    <div className='new-expense__control'>
+      <label>Amount</label>
+      <input type='number' min="0.01" step="0.01" onChange={amountChangeHandler} />
+    </div>
+    <div className='new-expense__control'>
+      <label>Date</label>
+      <input type='date' min="2019-01-01" step="2024-12-31" onChange={dateChangeHandler} />
+    </div>
+...
+```
+
+You'll notice that we can call useState more than once, they will never interfere with each other. We store strings because by default whenever you listen to the change event for an input, if you read the value, it will always be a string...
+
+Now we have our three state slices, and this is ok, we can have these separate states and manage them seperately. This is a key part of React, but there is a one state approach we can look at...
+
+
+# Section 4.54 - Using One State Instead (And Which Is Better).
+So previously, we had multiple handler functions with multiple state slices, and this is totally normal, but there is another way, and this is down to personal preference, you can argue that all three states are related, therefore the same concept repeated three times. We could also go for one state instead of three, how... byt calling useState once and passing in an onject as a value `useState({});`...
+```
+const ExpenseForm = () => {
+  // const [enteredTitle, setEnteredTitle] = useState('');
+  // const [enteredAmount, setEnteredAmount] = useState('');
+  // const [enteredDate, setEnteredDate] = useState('');
+  useState({});
+```
+
+This is important, as it is not a string or a number, and in our object we can group together our three states...
+```
+const ExpenseForm = () => {
+  useState({
+    enteredTitle: '',
+    enteredAmount: '',
+    enteredDate: ''
+  });
+```
+
+So the logic is kind of the same, but now it is in one state object instead of three separate slices, the only difference is we need to update all three properties instead of one, so we can destructure it like this...
+```
+const [userInput, setUserInput] = useState({
+  enteredTitle: '',
+  enteredAmount: '',
+  enteredDate: ''
+});
+```
+
+So when the user enters a title, for example, we call `setUserInput` instead...
+```
+const titleChangeHandler = (event) => {
+  setUserInput({
+    enteredTitle: event.target.value,
+  })
+}
+```
+
+but we also have to make sure we don't lose our other data as well, as we will dump the other keys when we update this one, React doesn't merge, it replaces. This one state approach means we are responsible for updating the other data, we manually need to copy the other values we are not updating, we can do this with a spread operator 
+```
+const titleChangeHandler = (event) => {
+  setUserInput({
+    ...userInput,
+    enteredTitle: event.target.value,
+  })
+}
+```
+
+If you haven't seen this before, this just takes an object, pulls out the key value pairs and adds them to the new object and we can overwrite the ones we want... We can then ensure the current values are maintained. Now we can do this for the other values
+```
+const titleChangeHandler = (event) => {
+  setUserInput({
+    ...userInput,
+    enteredTitle: event.target.value,
+  })
+}
+
+const amountChangeHandler = (event) => {
+  setUserInput({
+    ...userInput,
+    enteredAmount: event.target.value,
+  })
+}
+
+const dateChangeHandler = (event) => {
+  setUserInput({
+    ...userInput,
+    enteredDate: event.target.value,
+  })
+}
+```
+
+Now this code still needs a little tweaking, but both approaches we have covered are fine, you will probably see the "Multiple States" approach more in general use than single state approach, but both are ok to use.
+
+
+# Section 4.55 - Updating State That Depends on the Previous State.
+So we have seen how to use one state instead of multiple states, the way we are updating the state isn't entirely correct, it would work, but in niche cases it would fail. So what is the problem... We're depending on the previous state to update the state, in our case we depned on the previous state because we use one state instead of three, and we are reliant on copying in the other values so we don't lose them. So we depend on the previous states snapshot and overwrite only what we are updating.
+
+Now whenever you update state, and you depend on the previous state, you should do it differently...
+```
+const titleChangeHandler = (event) => {
+  // setUserInput({
+  //   ...userInput,
+  //   enteredTitle: event.target.value,
+  // })
+  setUserInput((prevState) => {});
+}
+...
+```
+
+We've passed a function to the function, `setUserInput` in this case and passed in a function to it... It is automatically executed by React and will automatically receive the previous state for the state for which we are calling the updating fucntion. Once we have the previous state snapshot, we need to return the new state snapshot...
+```
+const titleChangeHandler = (event) => {
+  // setUserInput({
+  //   ...userInput,
+  //   enteredTitle: event.target.value,
+  // })
+  setUserInput((prevState) => {
+    return { ...prevState, enteredTitle: event.target.value };
+  });
+}
+...
+```
+
+But why is this approach better than the one we looked at earlier? Both work right? Remember React schedules state updates, it doesn't do them straight away, if you schedule a lot, you could be depending on an outdated or incorrect snapshot if you use the previous approach (previous section). If you use the above approach, React will guarantee that the state snapshot will always be the latest, keepoing all the scheduled state updates in mind, so this is the safest way...
+
+For the purpose of the project will will go back to the multiple states approach...
+
+
+# Coding Exercise 7: Exercise: Using State with Form Inputs
+You're working on a text messaging app and your task is to validate the text entered by a user whilst the user is typing.
+
+If the text message entered is valid (for this example: if it's at least 3 characters long), the text "Valid message" should be displayed below the input field. If it's invalid (i.e., shorter than 3 characters), the text "Invalid message" should be displayed.
+
+```
+import React, {useState} from 'react';
+
+import './styles.css';
+
+// don't change the Component name "App"
+export default function App() {
+    const [text, setText] = useState('Invalid message');
+
+    const textChangeHandler = (event) => {
+        setText('Valid message');
+    };
+
+    return (
+        <form>
+            <label>Your message</label>
+            <input type="text" min="3" onChange={textChangeHandler} />
+            <p>{text}</p>
+        </form>
+    );
+}
+```
+
+
+# Coding Exercise 8: Exercise: Using State based on Older State
+Your task is to build a basic counter that should increment whenever the "Increment" button is clicked.
+
+Whilst this task allows you to apply your general knowledge about event handling and state (which you already practiced quite a bit at this point in the course), there's also one crucial new aspect: You should update the state following React best practices!
+
+For the sake of the example, make sure to use `React.useState()`...
+This is my solution
+```
+import React, {useState} from 'react';
+
+import './styles.css';
+
+// don't change the Component name "App"
+export default function App() {
+    const [counter, setCounter] = React.useState(0);
+
+    const counterChangeHandler = (event) => {
+        setCounter(counter + 1);
+    };
+  
+    return (
+      <div>
+        <p id="counter">{counter}</p>
+        <button onClick={counterChangeHandler}>Increment</button>
+      </div>
+    );
+}
+```
+
+This is the outlined solution from the module creator...
+As a first step, register a new state via React.useState():
+`const [counter, setCounter] = React.useState(0);`
+
+As a next step, output the counter state value in the App component's JSX code:
+```
+return (
+  <div>
+    <p id="counter">{counter}</p>
+    <button>Increment</button>
+   </div>
+);
+```
+
+Next, add the onClick prop to the <button>:
+`<button onClick={}>Increment</button>`
+
+The onClick prop should receive a function as a value - hence you must add such a function (e.g., called incrementCounterHandler) to your code:
+
+```
+export default function App() {
+    const [counter, setCounter] = React.useState(0);
+    
+    function incrementCounterHandler() {
+        // Todo: state updating logic
+    }
+    
+    return (
+      <div>
+        <p id="counter">{counter}</p>
+        <button onClick={incrementCounterHandler}>Increment</button>
+      </div>
+    );
+}
+```
+
+The last - yet most important - step is to update the counter state in the best possible way. When updating some state based on its previous value, you should use pass a function to the state updating function (i.e., to setCounter(), in this example). This function automatically receives the previous value and should return the new value:
+```
+function incrementCounterHandler() {
+  setCounter(prevCounter => prevCounter + 1);
+}
+```
+
+Therefore, the final code should look like this:
+```
+import React from 'react';
+ 
+import './styles.css';
+ 
+// don't change the Component name "App"
+export default function App() {
+    const [counter, setCounter] = React.useState(0);
+    
+    function incrementCounterHandler() {
+        setCounter(prevCounter => prevCounter + 1);
+    }
+    
+    return (
+      <div>
+        <p id="counter">{counter}</p>
+        <button onClick={incrementCounterHandler}>Increment</button>
+      </div>
+    );
+}
+```
+
+
+# Section 4.56 - Handling Form Submission.
+We spent a lot of time on state, but we aren't doing to much with state, and now we want to make sure our form can be submitted when we press the button, and we gather all our state slices into one object, which we will currently log to the console.
+
+We want to listen for our form being submitted, which we could use a click listener for. But this wouldn't be the best approach in our case, there is a default behaviour built into the browser and forms on web pages, if a button with type submit is pressed inside of a form, the overall form will emit an event to which we can listen, and that is the `submit` event. so we want to do the following...
+```
+...
+const dateChangeHandler = (event) => {
+  setEnteredDate(event.target.value);
+};
+
+const submitHandler = () => {};
+
+return <form onSubmit={submitHandler}>
+...
+```
+
+So we have created a new Handler (as we did before), but this time assigned it to the `onSubmit` event attached to the `<form>` itself.
+
+Now the thing here is that, as this is a default browser behaviour, that if you do click the submit button, the page reloads. this is because the page sends a request to the server that hosts the web page, in our case the DEV server, and we don't want that. Instead we want to hand the form submission with JavaScript and combine and collect the data and do something with it. Thankfully we can disable/prevent this default behaviour.
+```
+const dateChangeHandler = (event) => {
+  setEnteredDate(event.target.value);
+};
+
+const submitHandler = (event) => {};
+
+return <form onSubmit={submitHandler}>
+...
+
+```
+
+We get the event object automatically, and we can call the `preventdefault();` method
+```
+const dateChangeHandler = (event) => {
+  setEnteredDate(event.target.value);
+};
+
+const submitHandler = (event) => {
+  event.preventDefault();
+};
+
+return <form onSubmit={submitHandler}>
+...
+
+```
+
+This is built into JavaScript and not React specific, we can prevent the default of the request being sent, which stops it reloading the page also, we can continue to handle the data ourselves.
+```
+const dateChangeHandler = (event) => {
+  setEnteredDate(event.target.value);
+};
+
+const submitHandler = (event) => {
+  event.preventDefault();
+
+  const expenseData = {
+    title: enterdTitle,
+    amount: enteredAmount,
+    date: new Date(enteredDate)
+  };
+};
+
+return <form onSubmit={submitHandler}>
+...
+
+```
+
+Now we have create an `expenseData` object and can combine all our entered data. If we had used our one state instead of three we would already have a combined object.
+
+We add out `date` data to New Date to parse it into a date object. The property names are down to DEV choice, whereas the data we are passing relates to the state variables we created earlier. If we used a combined approach we might want to remap the property names.
+
+And now we'll just `console.log` what we need...
+```
+const dateChangeHandler = (event) => {
+  setEnteredDate(event.target.value);
+};
+
+const submitHandler = (event) => {
+  event.preventDefault();
+
+  const expenseData = {
+    title: enterdTitle,
+    amount: enteredAmount,
+    date: new Date(enteredDate)
+  };
+
+  console.log(expenseDate);
+};
+
+return <form onSubmit={submitHandler}>
+...
+
+```
+
+And when we test it we should see the date we entered in each field in the console. In my case I entered `Test`, `12.99` and `12/05/2023` and got the following in the console
+```
+{title: 'Test', amount: '12.99', date: Fri May 12 2023 01:00:00 GMT+0100 (British Summer Time)}
+```
+
+Now we just need to clear the input when the form is submitted
+
+
+# Section 4.57 - Adding Two Way Binding.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
