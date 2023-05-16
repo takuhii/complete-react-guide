@@ -1214,29 +1214,221 @@ This is of course another key concept in React, as two way binding is very usefu
 
 
 # Section 4.58 - Child-to-Parent Component Communication (Bottom Up).
+With the changes we made so far, we are able to gather our expense data into our object and clear the form data when we are done with it.
+
+Having our clearing data is nice, but we don't technically need it in our component, really it should be in the `App.js` because this is where our expenses array is, and our goal is to add our new expense to our list of existing expenses, and enrich it by adding an ID. We need to pass the data to the App component, and currently we have only passed data DOWN, but what about passing it back UP using `Props`? how do we pass data we generate in our components, back up to the `App.js`? We've already used it, so let's re-cap...
+
+In `ExpenseForm.js` we are listening to user input, to chnages to the title for example, whenever the user types there, our function `titleChangeHandler` executes and then we get our default event object, this is something the browser gives us. We can think of the input element as a component, it's not one of ours, but a pre-built one provided by React and translated to the input DOM element. It has component characteristics, and we can set props on it including our `onChnage` prop. `onChange` isn't that special, it's just a prop named `onChange` that want's a function as a value, then our inout element adds an `eventListener` and React sees that we have set a vlaue on the `onChange` prop and adds the listener to the rendered input element.
+
+This is a pattern we can replicate for our own components as well. We can call our own event props, and we can expect functions as values, and that would allow us to pass a function from a parent to a child and then call that function inside the child component, and when we call the function we can pass data to it as a parameter, and that is how we can communicate up... Let's take a quick look
+
+Let's say we want to pass `ExpenseData` which we gathered in `ExpenseForm` and pass it to the new expense component as a first step. Ultimately, if we want to reach the `App.js` we need to reach the `NewExpense.js` component first, and this is because it is the `NewExpense.js` component that uses the `ExpenseForm`. In a second step later on, it is the App component that uses the `NewExpense` component.
+
+We can't skip components in between, this is something we covered earlier, props can only be passed from Parent to Child, we can't skip intermidiate components. So as a first step, let's make sure we can pass the `Expense` data to `NewExpense`, we can do this by adding a new prop to `<ExpenseForm />`, it is out component, so we can call it what we like, in this instance we will call in onSaveExpenseData
+
+```
+const NewExpense = () => {
+  return <div className="new-expense">
+    <ExpenseForm onSaveExpenseData />
+  </div>
+};
+```
+
+If you rememeber what we said about props earlier, naming this `on...` indicates we are expecting a function, a function that is triggered when something happens inside of our component, in this case (and indicated by our name) when the user saves the entered expense data, so when the form is submitted. We can call this prop whatever we want though, we're just trying to standardise things here ;)
+
+Now we have named our prop, we need to define it, and in this case, we need to define it in `NewExpense.js`...
+```
+const saveExpenseDataHandler = (enteredExpenseData) => {}
+
+const NewExpense = () => {
+  return <div className="new-expense">
+    <ExpenseForm onSaveExpenseData />
+  </div>
+};
+```
+
+Using the ocnventions we've learned, we have create a new `const` called `saveExpenseDataHandler` and expected `enteredExpenseData`, we can name this whatever we like, but let's keep it simple for now... We have now made it quite clear that this function expects this parameter `enteredExpenseData`. Now we can add our `expenseData`...
+```
+const saveExpenseDataHandler = (enteredExpenseData) => {
+  const expenseData = {};
+};
+
+const NewExpense = () => {
+  return <div className="new-expense">
+    <ExpenseForm onSaveExpenseData />
+  </div>
+};
+```
+
+and copy in our `enteredExpenseData`...
+```
+const saveExpenseDataHandler = (enteredExpenseData) => {
+  const expenseData = {
+    ...enteredExpenseData
+  };
+};
+
+const NewExpense = () => {
+  return <div className="new-expense">
+    <ExpenseForm onSaveExpenseData />
+  </div>
+};
+```
+
+We expect this to be the object we generate in the `submitHandler`
+```
+...
+const submitHandler = (event) => {
+  event.preventDefault();
+
+  const expenseDate = {
+    title: enteredTitle,
+    amount: enteredAmount,
+    date: new Date(enteredDate)
+  };
+...
+```
+
+By using the spread operator, we have pulled out all the key/value pairs. and added a new key called `ID` and assing `Math.ranoom().toString()` to generate a unique value and convert it to a string...
+```
+const saveExpenseDataHandler = (enteredExpenseData) => {
+  const expenseData = {
+    ...enteredExpenseData,
+    id: Math.random().toString();
+  };
+};
+
+const NewExpense = () => {
+  return <div className="new-expense">
+    <ExpenseForm onSaveExpenseData />
+  </div>
+};
+```
+
+It's not a perfect approach to generate an id, but it will suffice for this project, and then we just log the `expenseData` for now
+```
+const saveExpenseDataHandler = (enteredExpenseData) => {
+  const expenseData = {
+    ...enteredExpenseData,
+    id: Math.random().toString();
+
+    console.log(expenseData);
+  };
+};
+
+const NewExpense = () => {
+  return <div className="new-expense">
+    <ExpenseForm onSaveExpenseData />
+  </div>
+};
+```
+
+Now it's a pointer to this function, `saveExpenseDatahandler` that we want to pass as a value through `onSaveExpensedata`...
+```
+const saveExpenseDataHandler = (enteredExpenseData) => {
+  const expenseData = {
+    ...enteredExpenseData,
+    id: Math.random().toString()
+  };
+  console.log(expenseData);
+};
+
+const NewExpense = () => {
+  return <div className="new-expense">
+    <ExpenseForm onSaveExpenseData={saveExpenseDataHandler} />
+  </div>
+};
+```
+
+So now our prop, receives our function as a value, but we don't execute, we just point, this way the function is passed to `ExpenseForm`, that is the first step, the second step is to use that function inside of our component... That is a step we didn't have to do for the inputs as these are built in components, but we still passed a function to `onChange` and React will add a listener and call the function we pass in when the event occurs, now we are doing this on our custom component, we also have to call the passed in function manually, and that is what we will do next.
+
+So inside of `ExpenseForm` we can expect our `onSaveExpenseData` prop because we are setting it when we use the `ExpenseForm` component, and in turn, we can extract the value passed through our `onSaveExpenseData` prop, i.e. our `saveExpenseDataHandler` function.
+
+So inside of `ExpenseForm` we do expect to get some props, because we are setting one now...
+```
+const ExpenseForm = (props) => {
+```
+
+And inside of the `submitHandler` instead of logging our expense data we will access it like this, and execute it here...
+```
+const submitHandler = (event) => {
+    event.preventDefault();
+
+    const expenseDate = {
+      title: enteredTitle,
+      amount: enteredAmount,
+      date: new Date(enteredDate)
+    };
+
+    props.onSaveExpenseData();
+    setEnteredTitle('');
+    setEnteredAmount('');
+    setEnteredDate('');
+  };
+```
+
+This is important, now we are executing it, and the reason we can execute it is because the value we are receiving is a function, it is this function below, that we are executing in a different component.
+```
+const saveExpenseDataHandler = (enteredExpenseData) => {
+  const expenseData = {
+    ...enteredExpenseData,
+    id: Math.random().toString()
+  };
+  console.log(expenseData);
+};
+``` 
+
+And we can execute this funtion because we are passing a pointer to it throuhg our `onSaveExpenseData` prop. This is a really important pattern you will use a lot in React. This is how you communicate between components, and this is how you communicate up and how you can make sure the child component can communicate up to the parent component. We can call our function in the `NewExpense` component and pass data as a parameter, when we call `onSaveExpenseData`, we can pass the data as an arguement, and that is the value which we receive in `NewExpense`, and when we run that in our preview, we should see this in the console...
+```
+{title: 'Test', amount: '12.99', date: Mon May 15 2023 01:00:00 GMT+0100 (British Summer Time), id: '0.7345974439598604'}
+```
+
+And we can see that this is being logged from our `NewExpense` file, line 10 (depends on how you format your file though). Now we can continue as we are and communicate from `NewExpense` to `App`, purely because it is the App component that needs to add  our new expense to the Array. We can do this by adding a new function...
+```
+...
+const addExpenseHandler = expense => {
+  console.log('In App.js!');
+  console.log(expense);
+};
+
+return (
+  <div>
+...
+```
+
+So here we expect to get our expene as a parameter, and then we expect to do something with it, so we'll `console.log` it for now, as we haven't learned how to handle this data properly yet. So now, as before, we need to add a point to `NewExpense`, so we can pass our data around, now we add a prop to `NewExpense`...
+```
+...
+<NewExpense onAddExpense={addExpenseHandler} />
+...
+```
+
+Inside of `NewExpense` we can call it... We can set `NewExpense` to receive our props, and add `props.onAddExpense();` so we are calling the function passed as a value for the `onAddExpense` prop. We make sure to forward our enriched data (remember the `id` we added) to the prop.
+```
+const NewExpense = (props) => {
+  const saveExpenseDataHandler = (enteredExpenseData) => {
+    const expenseData = {
+      ...enteredExpenseData,
+      id: Math.random().toString()
+    };
+    props.onAddExpense();
+  };
+
+    return <div className="new-expense">
+      <ExpenseForm onSaveExpenseData={saveExpenseDataHandler} />
+    </div>
+};
+```
+
+If we save and reload, we should see our `console.log` message and our new expense logged to the console also.
+```
+In App.js!
+
+{title: 'Book', amount: '12.99', date: Mon May 15 2023 01:00:00 GMT+0100 (British Summer Time), id: '0.05349438493545611'}
+```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Section 4.59 - Lifting The State Up.
 
 
 
