@@ -1429,10 +1429,51 @@ In App.js!
 
 
 # Section 4.59 - Lifting The State Up.
+We've learned about a very important concept of moving data from a child to a parent component by utilising props to receive a function from the parent which we call in the child component. This is closely related to another key concept we have already used without even knowing, and that is a concept called lifting state up.
 
+Consider this basic component tree
+```
+<App />
+|
+|- <Expenses />
+|
+|- <NewExpense />
+```
 
+This is basically our demo application, where we have an App component, which in turn renders an Expenses and New Expenses component. Now in this case the `<NewExpense />` component does generate some data, some state.
+```
+<App />
+|
+|- <Expenses />
+|
+|- <NewExpense />
+   Data/State is generated here
+```
 
+In our sample application we are fetching some user input, and it is quite common to generate or fetch data in a component, but you might not need that data in that component, and we need that data/state in another component
+```
+<App />
+|
+|- <Expenses />
+|  Data/State is needed here
+|
+|- <NewExpense />
+   Data/State is generated here
+```
 
+This is where we need our generated data in the end, slightly transformed and packed into an onject, but it is our generated data non the less... Naturally we would like to hand that data over, but as we have no direct connection between two sibling components (`Expenses and NewExpense`), this isn't possible. As we have currently seen, we can only communicate from Parent to Child and Child to Parent. That is why we use a parent component that has direct or in-direct access to both involved components. In our case the `App` component.
+```
+<App />
+This component has access to both involved components
+|
+|- <Expenses />
+|  Data/State is needed here
+|
+|- <NewExpense />
+   Data/State is generated here
+```
+
+Our `App` component has access to both components because it renders them both in it's JSX code
 
 
 
