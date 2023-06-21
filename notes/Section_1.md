@@ -1,11 +1,10 @@
 # Section 1.1 - Welcome to the Course
-Max introducing himself...
 
 
 # Section 1.2 - What is ReactJS?
 React is a JavaScript Library for writing User Interfaces
 
-Consider NetFLix. It is highly interactive, easy to ue and we don't wait for anything to load.
+Consider NetFlix. It is highly interactive, easy to ue and we don't wait for anything to load.
 
 Mobile apps give a great highly reactive user experience
 
@@ -18,53 +17,15 @@ JavaScript allows us to run logic in the browser, JavaScript can manipulate the 
 ReactJS is a client side JS library. All about modern, reactive UIs for the web.
 
 
-# Section 1.3 - Why React Instead of "Just JavaScript"?
-See code example in resources/section 1.3
-
-The React version works the same way but looks very different
-React is all about splitting your application into small componenets, therefore it is maintainable and manageble
-
-We kind of define what to expect as an end result, and then some placeholders, flexible elements, then very simple "instructions" to change what is visible on the screen. 
-
-These are defined by the react library. It makes building complex, rich, UI easier by giving us a higher level syntax where we write code in a declarative way.
-
-TL:DR > We define the end goal, custom HMTL elements, and react does the rest
+# Section 1.3 - ReactJS vs "Vanilla JavaScript": Why Use React?
 
 
-# Section 1.4 - Building Single-Page Applications (SPAs) with React
-Things get easier with React, when working with React we often build Single Page Apps (SPAs). Because we can use React to control parts of a HMTL page, say a sidebar, and we add a widget to the page.
 
-It is more common to control the entire page with react, which means we use React for EVERYTHING, even for switching ages. So when we clikc on a link and load a new page, it looks to the user like we switched pages, but rather we use react to change what is visible on the screen. This leads to a smoother UI and better experience.
+# Section 1.4 - Editing Our First React App
 
 
-# Section 1.5 - Exploring React Alternatives
-It is worth noting that there are alternatives to ReactJS
 
-React is one of the best frameworks you can learn, as it is a lean and focused, component based, library. Other features are added via 3rd party libraries and community packages.
-
-Angular is a very popular framework, which is a complete UI based framework and ship with more built in features. Uses Typescript, can be overkill for smaller projects... Syntax can differ from React
-
-VueJS is kind of like a mixture of Angular and React. It is a complete, component based, UI framework, and it includes a lot of features, less than angular but more than react. It has Routing OOTB for example.
-
-[Angular vs React vs Vue](https://academind.com/tutorials/angular-vs-react-vs-vue-my-thoughts)
-
-
-# Section 1.6 - Join the Online Learning Community
-Join our Online Learning Community
-Great to have you on board as a student!
-
-This course also comes with free access to our “Academind Community” on [AcadeMind Discord](https://academind.com/community/)
-
-There, you can find like-minded people, discuss issues, help each other, share progress, successes and ideas and simply have a good time!
-
-I believe that you learn the most if you don't learn alone but find learning partners and other people with similar interests. Our community is a great place for this - it's the perfect complimentary resource for this course.
-
-Joining it is of course free and 100% optional!
-
-We'd love to welcome you on board of the community! :-)
-
-
-# Section 1.7 - About the Course & Course Outline
+# Section 1.5 - About the Course & Course Outline
 What to expect from the course and what is covered.
 
 You might have already looked at the curriculum, this is a huge course and it is advised you give it a brief read, as it is always up to date.
@@ -87,7 +48,7 @@ Theory and Small Demos and examples will of course be used to help further us al
 Plenty of challenges and exercises as well :)
 
 
-# Section 1.8 - The Two Paths
+# Section 1.6 - The Two Paths
 There are two ways to take this course...
 
 ## Standard approach
@@ -105,7 +66,7 @@ The summary section is built stand alone, so you don't have to do the whole cour
 You can still revisit the entire course later on.
 
 
-# Section 1.9 - Getting the Most Out of this Course
+# Section 1.7 - Getting the Most Out of this Course
 Before we get started with React, lets check out a couple of tips and tricks to help us throuhgout the course
 
 * Watch the videos, choose your pace...
@@ -114,16 +75,32 @@ Before we get started with React, lets check out a couple of tips and tricks to 
 * Use the community to help and learn together. The Discord channel is really active.
 
 
-# Section 1.10 - Setting Up the Course Dev Environment
-For writing react code, any IDE is recommended, ATOM, Sublime Text, WebStorm, but we recommend VSCode. It is free and amazing.
+# Section 1.8 - Join the Online Learning Community
+Join our Online Learning Community
+Great to have you on board as a student!
 
-Once you're opened VSCode, you can tweak the appearance, and open files/folders from there.
+This course also comes with free access to our “Academind Community” on [AcadeMind Discord](https://academind.com/community/)
 
-Settings/styling, fine tune it to your requirements...
+There, you can find like-minded people, discuss issues, help each other, share progress, successes and ideas and simply have a good time!
 
-Theme: Dark+
-Extensions: (ESLint, Git History, Git Project Manager)
+I believe that you learn the most if you don't learn alone but find learning partners and other people with similar interests. Our community is a great place for this - it's the perfect complimentary resource for this course.
 
-*Prettier*: code formatting (format document > SHIFT + OPT + F), search format in settings, set default formatter to prettier.
+Joining it is of course free and 100% optional!
 
-*Material Icon Theme*: you don't really need this, but this changes the look of the file icons.
+We'd love to welcome you on board of the community! :-)
+
+
+# Section 1.9 - Creating React Projects: Browser-based vs Local Development
+
+
+
+# Section 1.10 - Creating React Projects Locally
+
+
+
+# Section 1.11 - Using CodeSandbox for React Development (No Local Setup Required)
+
+
+
+# Section 1.12 - Module Resources
+

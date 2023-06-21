@@ -1473,7 +1473,25 @@ This component has access to both involved components
    Data/State is generated here
 ```
 
-Our `App` component has access to both components because it renders them both in it's JSX code
+Our `App` component has access to both components because it renders them both in it's JSX code, that's why we want to utilise that... Because we can now store our state in that closest involved component (in our case, `App`), by lifting our state up, by passing out generated state data from `newExpesne` to `App`. And we are already doing this in our demo application by utilising `Props`. By calling the function we receive on the `onAddexpense` prop, that alone doesn't lift the state up, it just calls a function we receive through props, but then we do something important, we pass data through to function we call here, we pass the expense data to the function we received on the `onAddExpense` prop. By doing that we are lifting the data/state up to the `App` component, so we can use it, like in `addExpenseHandler` where we log it to the console. We aren't yet managing that data as state, we're just logging it, but we will manage it as state later on...
+
+We are already passing that down to the `expenses` component, as that is another part of that lifiting the state concept. We are lifting it up, we are passing it to the parent, because we either need it in the `App` component or pass it down to another component.
+
+We will hear this term quite a bit, and whenever we hear that is is about moving data from a child component to a parent or to pass it down to another child component.
+
+This does not work if you have an app that interacts with two child components.
+
+In our example, it is the `ExpenseForm` that generates the data, it is that component that works with state and stores user input, it then passes it up to `newExpense` component, then we lift it further to the `App` component.
+
+
+
+
+
+
+
+
+
+
 
 
 
