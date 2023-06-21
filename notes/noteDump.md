@@ -93,100 +93,7 @@ TypeError: Assignment to constant variable.
 
 This is because we tried to re-assign a contant variable, so we get an error, and an opportunity to rewrite your code.
 
-# Section 2.13 - Arrow functions
-An arrow function is a different syntax for creating JS functions, a normal function looks like this;
-```
-function myFunc() {
-	...
-}
-```
 
-you might also be aware of the syntax;
-```
-var myFunc = function() {
-	...
-}
-```
-
-An arrow function looks like this;
-```
-const myFunc = () => {
-	...
-}
-```
-
-Here we are storing it in a const, and on the right side of the equals, that is the arrow function syntax, a list of arguments can be added between the brackets, then the arrow, and then the function body.
-
-Arrow function syntax is a bit shorter, as it lacks the function keyword, and also helps resolve some issues with the `this` keyword.
-
-If you're worked with the `this` keyword in JS before you will know that it doesn't always refer to what you are expecting it to when you write your code. Witht he arrow function, it will always keep it's context at runtime.
-
-Code example
-```
-function printMyName(name) {
-  console.log(name);
-}
-
-printMyName();
-```
-
-Returns `undefined`, now we give it an arguement
-```
-function printMyName(name) {
-  console.log(name);
-}
-
-printMyName('Max');
-```
-
-Now it returns `Max`. Now the arrow function equivalent is as follows
-```
-const printMyName = (name) => {
-  console.log(name);
-}
-
-printMyName('Max');
-```
-
-We also get `Max` as an output. Now the `this` keyword will be used throughout the course, it becomes important once you add functions to objects. Let's explore some alternative to the code example.
-
-So if we only have one argument, we can omit the brackets as below, but it is only valid for ONE argument;
-```
-const printMyName = name => {
-  console.log(name);
-}
-
-printMyName('Max');
-```
-
-If you have a function that received no arguments, then leaving the space blank is not valid
-```
-const printMyName =  => {
-  console.log(name);
-}
-
-printMyName('Max');
-```
-
-you have to pass empty paranthesis, like this
-```
-const printMyName = () => {
-  console.log('Max');
-}
-
-printMyName();
-```
-
-and we will see `Max` in the output again. If we have more than one argument, we do need to wrap it in parenthesis like this.
-```
-const printMyName = (name, age) => {
-  console.log(name, age);
-}
-
-printMyName('Max', 28);
-```
-
-This will now return `Max` and `28`.
 
 # Section 2.14 - Exports and Imports (Modules)
 Another feature of next gen JS is writing modular code. So JS you split up over multiple files. We already can do this, but we have to import them in the correct order.
@@ -507,7 +414,7 @@ person.printGender();
 ```
 We will see `"Max"` and `"female"` in the output when we run the code.
 
-# 2.17 Spred and Rest Operators
+# 2.17 Spread and Rest Operators
 We've learned about classes and arrow functions, let's now look at new operators, specifically the `spread` and `rest` operators. Technically it is one operator `...` Depending on where we use it will dictate whether it is `spread` or `rest`.
 
 The `spread` is used to split up array elements or object properties
@@ -593,133 +500,8 @@ console.log(filter(1, 2, 3));
 ```
 When we run the code, we should only see `[1]`, as an array, because we filtered this array, which we created with a rest operator.
 
-# 2.18 Destructuring
-There is one more next-gen feature we need to cover, and that is destructuring. Destructuring allows you to easily extract array elements or object properties and store them in variables. This may sound similar to the rest/spread operators, but it isn't. as we learned earlier, spread/rest takes all the objects and distributes them in a new array or object. Destructuring allows you to pull out single elements and store them in variables, or Arrays and Objects.
 
-## Arrays
-This can be achieved like this
-```
-[a, b] = ['Hello', 'Max']
-console.log(a) // Hello
-console.log(b) // Max
-```
-We can use the strange looking syntax on the left of the equals `[a, b]`, it looks like we are creating an array, but we are not, we are actually assigning the variables `a` and `b` to `Hello` and `Max` respectively.
 
-## Objects
-For Object destructuring it is similar syntax but using curly braces
-```
-{name} = {name: 'Max', age: 28}
-console.log(name) // Max
-console.log(age) // undefined
-```
-
-So in array destructuring, the order defined what property we take, in Object destructring it is the porperty name, so `{name}` would target the name value on the right hand side, and why age would be undefined, as we are not targetting it.
-
-Let's have a little practice.
-```
-const numbers = [1, 2, 3];
-[num1, num2] = numbers;
-
-console.log(num1, num2);
-```
-
-We create our array syntax on the left of the equalt and assign it to our numbers array, if we run the code, we will see it logging
-```
-1
-
-2
-```
-because we are targetting 1 and 2, if we wanted to target 1 and 3, then we need to do the following
-```
-const numbers = [1, 2, 3];
-[num1, , num3] = numbers;
-
-console.log(num1, num3);
-```
-and we will get
-```
-1
-
-3
-```
-
-# 2.19 Reference and Primative Types
-If we create a number like this `const number = 1`, this is a primative type, if we create another number `num2` and use `number`
-```
-const number = 1;
-const num2 = number;
-```
-`num2` will create a copy of `number`, and if we log it, we will see it is `1`
-```
-const number = 1;
-const num2 = number;
-
-console.log(num2);
-```
-
-Number, strings and booleans are all primative types, whenever you store a variable in another variable, it will copy the value.
-
-Objects and Arrays are reference types though, we can demonstrate
-```
-const person = {
-  name: 'Max'
-}
-```
-We create a person object, with just a name inside of it. We now create a second person, and log it
-```
-const secondPerson = person;
-
-console.log(secondPerson);
-```
-this will output
-```
-[object Object] {
-  name: "Max"
-}
-```
-but it is not a copy of `person`, instead `person` the object is stored in memory, and the const `person` we store a pointer to the place in mmeory, if we then assign `person` to `secondPerson` that pointer is copied, we can demonstrate this this way
-```
-const person = {
-  name: 'Max'
-};
-
-const secondPerson = person;
-
-person.name = 'Manu';
-
-console.log(secondPerson);
-```
-You would expect to see `Max` in the output, but instead we see `Manu`, even though we are primnting the `secondPerson`. So for `secondPerson` the name also changes, the reason is, is it just copied the pointer, which points to the exact same object in memory as `person` does, so if we chnage name for `person`, we automatically change it for `secondPerson`. It is important to remember this, and it is the same for arrays, if you copy an array, and chnage an array element, it will also chnage in the "copied" array. This is important in React, as it can create unexpected behaviour, because you may manipulate one object in the app, then accidentally manipulate the same object elsewhere in the app. we will learn to copy this in an immutable way, which means we copy it, by REALLY copying it, for that we can use a `spread` operator
-```
-const person = {
-  name: 'Max'
-};
-
-const secondPerson = {
-  ...person
-};
-
-person.name = 'Manu';
-
-console.log(secondPerson); // Max
-```
-this will pull out the properties and the value of the properties and will add it to the newly created object `secondPerson`, now if we run the code, we will see `Max` in the console, and not `Manu`. Now we have created a real copy. If we `console.log(person)` at the same point, we will see `Manu`, because we have changed it after we copied it.
-```
-const person = {
-  name: 'Max'
-};
-
-const secondPerson = {
-  ...person
-};
-
-person.name = 'Manu';
-
-console.log(person); // Manu
-console.log(secondPerson); // Max
-```
-
-It's important to realise that objects and arrays are reference types and if you reassign them, you are copying the pointer and not the value. If you want to do this in a real copy way, you have to create a new object and copy the properties and not the entire object.
 
 # 2.20 Refreshing Array Functions
 We already saw filter, sort and map. Now let's say we want to turn an array into one that is dobuled. We can use an array function for this

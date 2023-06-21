@@ -18,7 +18,21 @@ ReactJS is a client side JS library. All about modern, reactive UIs for the web.
 
 
 # Section 1.3 - ReactJS vs "Vanilla JavaScript": Why Use React?
+Often, using just JavaScript isn't a great option, and using libraries like React is better, becuase React offers a simpler "Mental Model" and offers a better way of building complex applications and user interfaces.
 
+You will find two basic web applications in the `resources/section 1.3` which essentially have the same content. One app is built with Vanilla JS and the other with ReactJS, so wa can compare how they work.
+
+Now in the Vanilla JS version we have two important files, the `index.html` and the `index.js` which is responsible for pretty much everything, from getting the correct buttons, listening for when buttons are clicked and updating the UI when we perform an action.
+
+If we look at the React app, we can see that we have the same behaviour, but the code is very different. We have an `index.html` but it is in the `public` folder, and is actually very empty when we compare it to its Vanilla JS counterpart. The `body` section only contains one div, which is empty, and this is because React is responsible for rendering the entire user interface.
+
+It is the `index.js` file in the `src` folder where our React journey starts, but we will learn about that later.
+
+The `App.js` file in the `src` folder contains our important code, in their we have a function called `App`, and in their we see something strange becuase we have a bunch of HTML code in their, which is not a default JavaScript feature as, by default, if you add HTML to a JS file, you will get an error. However it will work in a React project becuase of how it is setup behind the scenes, and we will learn how to do this later on.
+
+If you look at the HTML code in our `App` function, you will see we have everything there that we also had in the Vanilla JS project, except now, it is in one file, and the js instructions (listeners and click events, etc) are missing in the React version, becuase now we have those elements in our HTML, and within that HTML we have some dynamic elements whihc now define the different states within the HMTL elements.
+
+When working with React
 
 
 # Section 1.4 - Editing Our First React App
