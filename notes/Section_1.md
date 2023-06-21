@@ -32,7 +32,9 @@ The `App.js` file in the `src` folder contains our important code, in their we h
 
 If you look at the HTML code in our `App` function, you will see we have everything there that we also had in the Vanilla JS project, except now, it is in one file, and the js instructions (listeners and click events, etc) are missing in the React version, becuase now we have those elements in our HTML, and within that HTML we have some dynamic elements whihc now define the different states within the HMTL elements.
 
-When working with React
+When working with React, you write decalrative code, this means you define the target state or states, not the steps needed to get there. React will then figure out how to get there and perform the necessary steps.
+
+To put this in perspective, when we write in Vanilla JS code, we are writing imperative code, this means we are NOT defining the goal, but just the steps to get there, and as you can see from our example projects, this is way more cumbersome. As you can see in the example, we have to define a lot of steps to achieve what React does in less code.
 
 
 # Section 1.4 - Editing Our First React App
